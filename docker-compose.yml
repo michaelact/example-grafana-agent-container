@@ -1,0 +1,24 @@
+services:
+  grafana-agent:
+    image: grafana/agent:v0.35.0
+    hostname: ${HOSTNAME}
+    env_file:
+      - '.env'
+    environment:
+      - 'AGENT_MODE=flow'
+    volumes:
+      - '/proc:/host/proc:ro'
+      - '/sys:/host/sys:ro'
+      - '/:/host:ro,rslave'
+      - './etc/grafana-agent-flow.river:/etc/grafana-agent-flow.river:ro'
+    restart: on-failure:5
+    ports:
+      - '12345:12345'
+    command:
+      - 'run'
+      - '--server.http.listen-addr=0.0.0.0:12345'
+      - '/etc/grafana-agent-flow.river'
+    deploy:
+      resources:
+        limits:
+          memory: 128m
